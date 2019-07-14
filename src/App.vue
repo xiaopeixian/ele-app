@@ -54,7 +54,7 @@ export default {
                 city: result.adcode
               })
             
-              var lnglat = result.rectangle.split(";"[0].split(","))
+              var lnglat = result.rectangle.split(";")[0].split(",")
 
               geocoder.getAddress(lnglat, function(status, data) {
                 if (status === 'complete' && data.info === 'OK') {
@@ -69,7 +69,7 @@ export default {
                     });
                     self.$store.dispatch(
                       "setAddress",
-                      data.regeocode.formttedAddress
+                      data.regeocode.formattedAddress
                     )
                  }
                })

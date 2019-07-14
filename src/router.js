@@ -51,16 +51,17 @@ const router = new Router({
   ]
 })
 // 路由守卫 必须登录才能进去其他页面
-// router.beforeEach((to,from,next)=>{
-//   const isLogin = localStorage.ele_login ? true : false
-//   // 判断是否在登录状态下
-//   if (to.path == '/login') {
-//     // 如果在登录页面下，一切正常显示
-//     next();
-//   } else {
-//     // 是否在登录状态下，不是的话就跳转到登录页面
-//     isLogin ? next() : next('/login')
-//   }
-// })
+router.beforeEach((to,from,next)=>{
+  const isLogin = localStorage.ele_login ? true : false
+  // 判断是否在登录状态下
+  if (to.path == '/login') {
+    // 如果在登录页面下，一切正常显示
+    next();
+  } else {
+    // 是否在登录状态下，不是的话就跳转到登录页面
+    // isLogin ? next() : next('/login')
+    next()
+  }
+})
 
 export default router

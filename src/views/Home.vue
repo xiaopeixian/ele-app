@@ -3,18 +3,20 @@
     <div class="header">
       <!-- 点击跳转到编辑地址 -->
       <!-- <div class="address_map" @click="$router.push('/address')"> -->
-      <div
-        class="address_map"
-        @click="$router.push({name:'address',params:{city:city}})"
-      >
+      <div class="address_map" @click="$router.push({name:'address',params:{city:city}})">
         <i class="fa fa-map-marker"></i>
         <span>{{address}}</span>
         <i class="fa fa-sort-desc"></i>
       </div>
+    </div>
+    <div class="search_wrap" >
       <div class="shop_search">
         <i class=" fa fa-search"></i>
         搜索商家 商家名称
       </div>
+    </div>
+    <div id="container" style="height:2000px">
+      
     </div>
   </div>
 </template>
@@ -44,9 +46,9 @@ export default {
   overflow: auto;
   box-sizing: border-box;
 }
-.header {
+.header,.search_wrap {
   background-color: #009eef;
-  padding: 16px;
+  padding:10px 16px;
 }
 .header .address_map {
   color: #fff;
@@ -63,12 +65,20 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.header .shop_search {
-  margin-top: 10px;
+.search_wrap .shop_search {
+  /* margin-top: 10px; */
   background-color: #fff;
   padding: 10px 0;
   border-radius: 4px;
   text-align: center;
   color: #aaa;
+}
+.search_wrap{
+  /* 粘性定位 相对定位与固定定位的结合 */
+  position: sticky;
+  top:0;
+  /* 显示的优先级参数 */
+  z-index: 999;
+  box-sizing: border-box;
 }
 </style>
