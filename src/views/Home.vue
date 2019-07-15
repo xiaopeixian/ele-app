@@ -15,15 +15,27 @@
         搜索商家 商家名称
       </div>
     </div>
-    <div id="container" style="height:2000px">
-      
+    <div id="container">
+      <!-- 轮播图 -->
+      <mt-swipe :auto="4000" class="swipe">
+         <mt-swipe-item v-for="(img,index) of swipeImgs" :key='index'>
+           <!-- 标签中使用：绑定数值 -->
+           <img :src="img" :alt="index">
+         </mt-swipe-item>
+      </mt-swipe>
     </div>
   </div>
 </template>
 
 <script>
+import { Swipe, SwipeItem } from 'mint-ui';
 export default {
   name:"home",
+  data(){
+    return{
+      swipeImgs:[]
+    }
+  },
   computed:{
     address(){
       return this.$store.getters.address
@@ -32,6 +44,21 @@ export default {
       return (
         this.$store.getters.location.addressComponent.city ||
         this.$store.getters.location.addressComponent.province
+      )
+    }
+  },
+  created(){
+    // 获取图片数据
+    this.getData()
+  },
+  methods:{
+    getData(){
+      // 默认为get请求
+      this.$axios("/api/profile/shopping").then(
+        res=>{
+          // console.log(res.data.swipeImgs);
+          this.swipeImgs = res.data.swipeImgs
+        }
       )
     }
   }
@@ -80,5 +107,12 @@ export default {
   /* 显示的优先级参数 */
   z-index: 999;
   box-sizing: border-box;
+}
+.swipe{
+  height:100px
+}
+.swipe img{
+  width:100%;
+  height:100px;
 }
 </style>
