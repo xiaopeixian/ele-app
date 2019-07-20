@@ -47,7 +47,7 @@ export default {
         citySearch.getLocalCity(function (status, result) {
           if (status === 'complete' && result.info === 'OK') {
              // 查询成功，result即为当前所在城市信息
-             console.log(result);
+            //  console.log(result);
              AMap.plugin('AMap.Geocoder', function() {
               var geocoder = new AMap.Geocoder({
                 // city 指定进行编码查询的城市，支持传入城市名、adcode 和 citycode
