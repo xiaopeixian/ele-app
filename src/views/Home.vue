@@ -41,15 +41,18 @@
     <!-- 导航 -->
     <FilterView :filterData="filterData" @searchFixed='showFilterView' @update='update'/>
     <!-- 商家信息 -->
-    <div style="height:600px"></div>
-    <!-- <IndexShop v-for="(item,index) in restaurants" :key = 'index' :restaurant = 'item.restaurant'/> -->
+    <div style="height: calc(100% - 95px);
+  overflow: auto;">
+    <IndexShop v-for="(item,index) in restaurants" :key = 'index' :restaurant = 'item.restaurant'/>
+      
+    </div>
   </div>
 </template>
 
 <script>
 import { Swipe, SwipeItem } from 'mint-ui';
 import FilterView from '../components/FilterView.vue'
-// import IndexShop from '../components/IndexShop.vue'
+import IndexShop from '../components/IndexShop.vue'
 export default {
   name:"home",
   data(){
@@ -58,6 +61,8 @@ export default {
       entries:[],
       filterData:null,
       showFilter:false,
+      page:1,
+      size:5,
       restaurants:[]
     }
   },
@@ -111,7 +116,7 @@ export default {
   // 注册组件
   components:{
     FilterView,
-    // IndexShop
+    IndexShop
   }
 }
 </script>

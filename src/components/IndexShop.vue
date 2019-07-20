@@ -2,7 +2,7 @@
   <section class="index-container">
     <div class ="index-shopInfo">
       <!-- 左侧图片 -->
-      <div class="log_container">
+      <div class="logo_container">
         <img :src="restaurant.image_path" alt>
       </div>
       <!-- 右侧内容 -->
@@ -11,18 +11,18 @@
         <div class="index_shopname">
           <i v-if="restaurant.is_premium">品牌</i>
           <span> {{ restaurant.name }} </span>
-        </div>
+        </div >
         <!-- 第二行 星级 -->
-        <div>
+        <div class="index-rateWrap">
           <div class="Rating-gray">
-            <i class="fa fa-star"></i>
-            <i class="fa fa-star"></i>
-            <i class="fa fa-star"></i>
-            <i class="fa fa-star"></i>
-            <i class="fa fa-star"></i>
+             <i class="fa fa-star"></i>
+             <i class="fa fa-star"></i>
+             <i class="fa fa-star"></i>
+             <i class="fa fa-star"></i>
+             <i class="fa fa-star"></i>
+             <span>{{ restaurant.rating }}</span>
+             <span>月售{{ restaurant.recent_order_num }}单</span>
           </div>
-          <span>{{ restaurant.rating }}</span>
-          <span>  月售{{ restaurant.recent_order_num }}单</span>
           <div v-if="restaurant.delivery_mode" class="delivery">
             <span class="icon-hollow">
               {{restaurant.delivery_mode.text}}
@@ -58,50 +58,87 @@ export default {
 
 <style scoped>
 .index-container{
-  padding:10px 0;
   background: #fff;
-  border-bottom:1px solid rgba(220, 220, 220, 0.377);
+  color: #666;
+  padding: 4vw 0;
+  border-bottom: 0.133333vw solid #eee;
 }
 .index-shopInfo{
-  padding: 0 11px;
   display: flex;
-  align-items:center;
+  justify-content: flex-start;
+  padding: 0 2.666667vw;
+  align-items: stretch;
 }
-.log_container{
-  /* float: left; */
-  margin-right: 10px;
+.logo_container{
+  width: 17.333333vw;
+  height: 17.333333vw;
 }
-.log_container img{
-  width:67px;
-  border: 1px solid rgba(197, 197, 197, 0.274)
+.logo_container img{
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: 0.133333vw solid rgba(0, 0, 0, 0.08);
+  border-radius: 0.533333vw;
 }
 .index_main{
-  line-height: 26px;
-  font-size: 12px;
-  color: rgb(119, 119, 119);
-  width:100%;
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  flex-direction: column;
+  padding-left: 2.666667vw;
+  font-size: 0.2rem;
+  flex-grow: 1;
 }
 .index_shopname{
-  font-weight: 600;
-  font-size: 14.4px;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.9rem;
   color:#333;
 }
 .index_shopname i{
-  font-size: 12px;
-  background: yellow;
+  background: #ffe800;
+  margin-right: 1.333333vw;
+  padding: 0.266667vw 0.666667vw;
+  text-align: center;
+  white-space: nowrap;
+  font-size: 0.6rem;
 }
-.delivery{
-  float: right;
+.index_shopname span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.icon-hollow{
-  background: rgba(13, 107, 230, 0.726);
-  color:#fff;
+.index-rateWrap{
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  justify-content:space-between;
+}
+.index-rateWrap .rate {
+  margin-right: 1.066667vw;
 }
 .index-moneylimit{
+  width: 100%;
   display: flex;
-  justify-content:space-between
+  justify-content:space-between;
+}
+.index-moneylimit .index-distanceWrap {
+  color: #999;
 }
 .Rating-gray{
   display: inline-flex;
+}
+.delivery{
+  display: flex;
+  align-items: center;
+  font-size: 0.6rem;
+  margin-left: 1.066667vw;
+}
+.delivery .icon-hollow{
+  background-color: #2395ff;
+  color:#fff;
+  padding: 2px;
+  box-sizing: border-box;
 }
 </style>

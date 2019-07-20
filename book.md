@@ -24,3 +24,5 @@
   flex: 1;
   
   !important 表示优先调用
+
+   text-overflow: ellipsis; 省略号修剪文本
