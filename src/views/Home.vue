@@ -41,16 +41,23 @@
     <!-- 导航 -->
     <FilterView :filterData="filterData" @searchFixed='showFilterView' @update='update'/>
     <!-- 商家信息 -->
-    <div style="height: calc(100% - 95px);
-  overflow: auto;">
-    <IndexShop v-for="(item,index) in restaurants" :key = 'index' :restaurant = 'item.restaurant'/>
-      
-    </div>
+    <mt-loadmore
+      :top-method="loadData"
+      :bottom-method="loadMore"
+      :bottom-all-loaded="allLoaded" 
+      :auto-fill="false"
+      :bottomPullText="bottomPullText"
+      ref="loadmore"
+    >
+      <div>
+        <IndexShop v-for="(item,index) in restaurants" :key = 'index' :restaurant = 'item.restaurant'/>
+      </div>
+    </mt-loadmore>
   </div>
 </template>
 
 <script>
-import { Swipe, SwipeItem } from 'mint-ui';
+import { Swipe, SwipeItem,Loadmore } from 'mint-ui';
 import FilterView from '../components/FilterView.vue'
 import IndexShop from '../components/IndexShop.vue'
 export default {
@@ -63,7 +70,10 @@ export default {
       showFilter:false,
       page:1,
       size:5,
-      restaurants:[]
+      restaurants:[],
+      allLoaded:false,
+      bottomPullText: "上拉加载更多",
+      data:null
     }
   },
   computed:{
@@ -91,19 +101,49 @@ export default {
           this.entries = res.data.entries
         }
       ),
-      this.$axios("/api/profile/filter").then(
-        res=>{
+      this.$axios("/api/profile/filter").then(res=>{
           // console.log(res.data);
           this.filterData = res.data
-        }
-      ),
-      // 拉取商家信息
-      // 需要使用下拉刷新，所以用post
-      this.$axios.post(`/api/profile/restaurants/1/5`).then(res=>{
-          console.log(res.data);
+        }),
+      // 拉取商家信息 需要使用下拉刷新，所以用post
+      this.loadData();
+    },
+    loadData(){
+      this.page = 1;
+      this.allLoaded = false;
+      this.bottomPullText = "上拉加载更多 ";
+      this.$axios
+        .post(`/api/profile/restaurants/${this.page}/${this.size}`,this.data)
+        .then(res=>{
+          // console.log(res.data);
+          this.$refs.loadmore.onTopLoaded();
           this.restaurants = res.data;
-        }
-      )
+        });
+    },
+    loadMore(){
+      if (!this.allLoaded) {
+        this.page ++;
+         // 拉取商家信息
+        this.$axios
+          .post(`/api/profile/restaurants/${this.page}/${this.size}`)
+          .then(res => {
+            // 加载完之后重新渲染
+            this.$refs.loadmore.onBottomLoaded();
+            if (res.data.length > 0) {
+              res.data.forEach(item =>{
+                this.restaurants.push(item)
+              });
+              if (res.data < this.size) {
+                this.allLoaded = true;
+                this.bottomPullText = "没有更多了哦";
+              }
+            } else {
+              // 数据为空
+              this.allLoaded = true;
+              this.bottomPullText = "没有更多了哦";
+            }
+          })
+      }
     },
     showFilterView(isShow){
         // console.log(isShow);
@@ -111,6 +151,8 @@ export default {
     },
     update(condition){
       console.log(condition);
+      this.data = condition;
+      this.loadData()
     }
   },
   // 注册组件
@@ -226,5 +268,9 @@ export default {
   top:0px;
   width:100%;
   z-index: 999;
+}
+.mint-loadmore {
+  height: calc(100% - 95px);
+  overflow: auto;
 }
 </style>
