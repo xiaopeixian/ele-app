@@ -40,13 +40,23 @@ const router = new Router({
           path:'/city',
           name:'city',
           component:() => import('./views/City.vue')
-        },
+        }
       ]
     },
     {
       path: '/login',
       name: 'login',
       component: () => import('./views/Login.vue')
+    },
+    {
+      path:'/search',
+      name:'search',
+      component:() => import('./views/Search.vue')
+    },
+    {
+      path:'/shop',
+      name:'shop',
+      component:() => import('./views/shop/Shop.vue')
     },
   ]
 })

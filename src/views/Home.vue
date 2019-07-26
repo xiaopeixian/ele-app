@@ -10,7 +10,10 @@
       </div>
     </div>
     <!-- 搜索框 -->
-    <div class="search_wrap" :class="{'fixedView':showFilter}">
+    <div
+      class="search_wrap"
+      :class="{'fixedView':showFilter}"
+      @click="$router.push({name:'search'})">
       <div class="shop_search">
         <i class=" fa fa-search"></i>
         搜索商家 商家名称
@@ -150,7 +153,7 @@ export default {
         this.showFilter = isShow
     },
     update(condition){
-      console.log(condition);
+      // console.log(condition);
       this.data = condition;
       this.loadData()
     }
@@ -164,7 +167,7 @@ export default {
 </script>
 
 
-<style>
+<style scoped>
 .home {
   width: 100%;
   height: 100%;

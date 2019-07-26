@@ -25,4 +25,19 @@
   
   !important 表示优先调用
 
-   text-overflow: ellipsis; 省略号修剪文本
+  不换行，超出使用省略号
+  white-space: nowrap;不换行
+  text-overflow: ellipsis; 省略号修剪文本
+  overflow: hidden;
+
+  prevent的使用：阻止默认事件的发生
+
+  蒙版：
+  .nav_back{
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100px;
+    background: rgba(0, 0, 0,0.5);
+    opacity: 0.9;
+  }
