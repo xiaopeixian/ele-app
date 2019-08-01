@@ -41,3 +41,13 @@
     background: rgba(0, 0, 0,0.5);
     opacity: 0.9;
   }
+
+  <transition>中只有name属性，不可添加其他标签属性
+  <transition>中只能有一个子元素并且该子元素需要有v-show或者v-if来控制是否显示
+
+  router-link 写css使用a标签
+
+  去掉滚动条
+  ::-webkit-scrollbar{
+    width:0!important;
+  }

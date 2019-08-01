@@ -1,57 +1,62 @@
 <template>
   <div class="shop" v-if="shopInfo">
-    <div class="head-nav">
-      <div class="nav_bg">
+    <div class="head-NavBar">
+
+      <!-- 背景和商家图片 -->
+      <div class="NavBar_bg">
         <div class="pic_bg"></div>
         <img :src="shopInfo.rst.scheme">
       </div>
-      <div class="nav_back">
+      <div class="NavBar_back">
         <i @click="$router.push('/home')" class="fa fa-chevron-left"></i>
       </div>
       <div class="shop_image">
         <img :src="shopInfo.rst.image_path">
       </div>
-      <div class="shop_info">
-        <div class="shop_name">
-          <h1> {{shopInfo.rst.name}} </h1>
+
+      <!-- 商家信息 -->
+      <div class="index-rst">
+        <div class="rst-name" >
+          <span @click="showInfoModel=true"> {{shopInfo.rst.name}} </span>
           <i class="fa fa-caret-right"></i>
         </div>
-        <div class="rate">
-          <div> 评分{{shopInfo.rst.rating}} </div>
-          <div class="sale"> 月售{{shopInfo.rst.recent_order_num}}单 </div>
-          <div v-if="shopInfo.rst.delivery_mode">
-            <span>
-              {{shopInfo.rst.delivery_mode.text}}约{{shopInfo.rst.order_lead_time}}分钟 
-            </span>
-          </div>
+        <!-- 弹窗信息 --> 
+        <InfoModel @close="showInfoModel=false" :showInfoModel="showInfoModel" :rst="shopInfo.rst"></InfoModel>
+        
+        <!-- 评分月售 -->
+        <div class="rst-order">
+          <span>评分{{shopInfo.rst.rating}}</span>
+          <span>月售{{shopInfo.rst.recent_order_num}}单</span>
+          <span>蜂鸟专送约{{shopInfo.rst.order_lead_time}}分钟</span>
         </div>
-        <div class="shop_disc">
-          <div>
-            <span>满减</span>
-            <span></span>
-          </div>
-          <div class="sale"></div>
-        </div>
-        <div>
 
+        <!-- 优惠信息 -->
+        <Activity :activities="shopInfo.rst.activities"></Activity>
+        <!-- 公告 -->
+        <div class="rst-promotion">
+          <p>公告: {{shopInfo.rst.promotion_info}}</p>
         </div>
       </div>
-    </div>
-    <div class="tabbar">
 
+      <!-- 导航栏 -->
+      <NavBar/>
+      <router-view></router-view>
     </div>
-    <div class="container">
-
-    </div>
+    
   </div>
 </template>
 
 <script>
+import InfoModel from '../../components/shops/InfoModel'
+import Activity from '../../components/shops/Activity'
+import NavBar from '../../components/shops/NavBar'
+import { log } from 'util';
 export default {
   name:"Shop",
   data(){
     return{
-      shopInfo:null
+      shopInfo:null,
+      showInfoModel:false,
     }
   },
   created(){
@@ -60,41 +65,46 @@ export default {
   methods:{
     getData(){
       this.$axios("/api/profile/batch_shop").then(res =>{
-        console.log(res.data);
+        // console.log(res.data);
         this.shopInfo = res.data;
       })
-    }
+    },
+  },
+  components:{
+    InfoModel,
+    Activity,
+    NavBar,
   }
 }
 </script>
 
 <style scoped>
-.nav_bg{
+.head{
   width: 100%;
   height: 100%;
   overflow: auto;
   box-sizing: border-box;
 }
-.header-nav {
+.header-NavBar {
   position: relative;
 }
-.nav_bg img{
+.NavBar_bg img{
   width:100%;
   height: 26.666667vw;
 }
 /* 蒙版 */
-.nav_back{
+.NavBar_back{
   position: absolute;
   top: 0;
   width: 100%;
   height: 26.666667vw;
   background: rgba(0, 0, 0,0.5);
 }
-.nav_back i{
+.NavBar_back i{
+  color: #fff;
+  font-size: 1.3rem;
   margin-left: 1.333333vw;
   margin-top: 1.333333vw;
-  color:white;
-  font-size: 21px;
 }
 /* 调整图片的位置 */
 .shop_image {
@@ -110,31 +120,50 @@ export default {
   height: 20vw;
   border-radius: 0.8vw;
 }
-.shop_info{
-  background:#fff;
-  padding:38px 35px 20px 30px;
-}
-.shop_name{
+.index-rst{
+  padding: 8vw 0 0;
   display: flex;
-  padding:0 20px;
-  font-weight: 800;
+  flex-direction: column;
+  align-items: center;
+  background:#fff;
+  box-shadow: inset 0 -0.666667vw 0.666667vw hsla;
 }
-.shop_name h1{
+.index-rst .rst-name{
+  flex:1;
+  width: 72vw;
+  font-size: 1.3rem;
+  font-weight: 700;
   white-space: nowrap;
+  padding-right: 2.666667vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.6vw 0;
+}
+.rst-name span{
   text-overflow: ellipsis;
   overflow: hidden;
-  font-size: 21px;
+  text-align: left;
 }
-.shop_name i{
-  font-size: 22px;
+.index-rst .rst-order{
+  white-space: nowrap;
+  height: 3.2vw;
+  margin-top: 1.733333vw;
+  color: #666;
+  text-align: center;
+  font-size: 0.6rem;
 }
-.rate{
-  display: flex;
-  font-size: 10px;
-  margin: 14px 0 10px 60px;
-  color:#666666;
+.rst-order span{
+  margin: 0 3px;
 }
-.sale{
-  margin:0px 6px;
+.index-rst .rst-promotion {
+  width: 80vw;
+  font-size: 0.6rem;
+  color: #999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 2.266667vw auto 2.666667vw;
+  padding: 0;
+  white-space: nowrap;
 }
 </style>

@@ -6,6 +6,8 @@ Vue.use(Router)
 const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
+  // 设置链接激活时使用的 CSS 类名
+  linkActiveClass:"active",
   routes: [
     {
       path: '/',
@@ -56,7 +58,26 @@ const router = new Router({
     {
       path:'/shop',
       name:'shop',
-      component:() => import('./views/shop/Shop.vue')
+      redirect:'/goods',
+      // 实现默认路由
+      component:() => import('./views/shop/Shop.vue'),
+      children:[
+        {
+          path:'/goods',
+          name:'goods',
+          component:() => import('./views/shop/Goods.vue')
+        },
+        {
+          path:'/comments',
+          name:'comments',
+          component:() => import('./views/shop/Comments.vue')
+        },
+        {
+          path:'/seller',
+          name:'seller',
+          component:() => import('./views/shop/Seller.vue')
+        },
+      ]
     },
   ]
 })
