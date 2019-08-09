@@ -51,3 +51,14 @@
   ::-webkit-scrollbar{
     width:0!important;
   }
+
+  /* 三角形 */
+  content: " ";
+  position: absolute;
+  bottom: 100%;
+  left: 4vw;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 2.133333vw 2.133333vw;
+  border-color: transparent transparent #f3f3f3;

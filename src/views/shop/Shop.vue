@@ -1,19 +1,18 @@
 <template>
   <div class="shop" v-if="shopInfo">
-    <div class="head-NavBar">
 
+    <nav class="header-nav">
       <!-- 背景和商家图片 -->
-      <div class="NavBar_bg">
-        <div class="pic_bg"></div>
+      <div class="nav_bg">
         <img :src="shopInfo.rst.scheme">
       </div>
-      <div class="NavBar_back">
+      <div class="nav_back">
         <i @click="$router.push('/home')" class="fa fa-chevron-left"></i>
       </div>
       <div class="shop_image">
         <img :src="shopInfo.rst.image_path">
       </div>
-
+    </nav>
       <!-- 商家信息 -->
       <div class="index-rst">
         <div class="rst-name" >
@@ -41,7 +40,6 @@
       <!-- 导航栏 -->
       <NavBar/>
       <router-view></router-view>
-    </div>
     
   </div>
 </template>
@@ -79,28 +77,28 @@ export default {
 </script>
 
 <style scoped>
-.head{
+.shop{
   width: 100%;
   height: 100%;
   overflow: auto;
   box-sizing: border-box;
 }
-.header-NavBar {
+.header-nav{
   position: relative;
 }
-.NavBar_bg img{
+.nav_bg img{
   width:100%;
   height: 26.666667vw;
 }
 /* 蒙版 */
-.NavBar_back{
+.nav_back{
   position: absolute;
   top: 0;
   width: 100%;
   height: 26.666667vw;
   background: rgba(0, 0, 0,0.5);
 }
-.NavBar_back i{
+.nav_back i{
   color: #fff;
   font-size: 1.3rem;
   margin-left: 1.333333vw;

@@ -60,4 +60,5 @@ export default {
   width: 6.933333vw;
   overflow: hidden;
 }
+
 </style>

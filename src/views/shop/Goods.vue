@@ -28,10 +28,10 @@
       <div class="menu-wrapper" ref="menuScroll">
         <ul> 
           <li
-          :class="{'current':currentIndex === index}"  
-          v-for="(menu,index) in shopInfo.menu" 
-          :key="index" 
-          @click="selectMenu(index,$event)"
+            :class="{'current':currentIndex === index}"  
+            @click="selectMenu(index,$event)"
+            v-for="(menu,index) in shopInfo.menu" 
+            :key="index" 
           >
             <img v-if="menu.icon_url" :src="menu.icon_url">
             <span>{{menu.name}}</span>
@@ -39,30 +39,46 @@
         </ul>
       </div>
 
-      <!-- 右侧 -->
-      <div class="shoplist-wrap" ref="shoplistWrap">
-        <ul ref="itemList">
-          <li class="shop-hook" v-for="(menu,index) in shopInfo.menu" :key="index" >
-            <div>
-              <span class="shoplist-name">{{menu.name}}</span>
-              <span v-show="menu.description">{{menu.description}}</span>
+      <!-- 右侧商品内容 -->
+      <div class="foods-wrapper" ref="foodScroll">
+        <ul>
+          <li class="food-list-hook" v-for="(menu,index) in shopInfo.menu" :key="index" >
+            <!-- 分类标题 -->
+            <div class="category-title">
+              <strong>{{menu.name}}</strong>
+              <span>{{menu.description}}</span>
             </div>
-            <div class="shoplist-info" v-for="(item,i) in menu.foods" :key="i">
+            <!-- 商品列表 -->
+            <div
+              class="fooddetails"
+              v-for="(item,i) in menu.foods"
+              :key="i"
+              @click="handleFood(item)"
+            >
+              <!-- 左 -->
               <img :src="item.image_path" alt="">
-              <div class="goods-info">
-                <p>{{item.name}}</p>
-                <span class="goods-description">{{item.description}}</span>
-                <div>
-                  <span>月售{{item.month_sales}}份</span>
-                  <span>好评率{{item.satisfy_rate}}</span>
+              <!-- 右 -->
+              <section class="fooddetails-info">
+                <h4>{{item.name}}</h4>
+                <p class="fooddetails-des">{{item.description}}</p>
+                <p class="fooddetails-sales">
+                  月售{{item.month_sales}}份 好评率{{item.satisfy_rate}}
+                </p>
+                <div class="fooddetails-price">
+                  <span class="price">¥{{item.activity.fixed_price}}</span>
+                  <CartControll :food="item"/>
                 </div>
-              </div>
+              </section>
             </div>
           </li>
         </ul>
       </div>
-
     </div>
+    <!-- 购物车 -->
+    <ShopCart :shopInfo = "shopInfo"/>
+
+    <!-- 商品详情 -->
+    <Food @close="showFood=false" :isShow="showFood" :food = "selectedFood"/>
 
   </div>
 </template>
@@ -70,16 +86,21 @@
 <script>
 import BScroll from 'better-scroll'
 import CartControll from '../../components/shops/CartControll.vue'
+import ShopCart from './ShopCart.vue'
+import Food from './Food.vue'
 import { log } from 'util';
 export default {
   name:"Goods",
   data(){
     return{
-      shopInfo:[],
-      current:Number,
+      shopInfo:null,
+      menuScroll: {}, // 左侧滚动对象
+      foodScroll: {}, // 右侧滚动对象
       scrollY:0, //右侧列表滑动的y轴坐标
       listHeight:[], //所有分类头部位置
       clickEvent:false,
+      selectedFood:null,
+      showFood:false,
     }
   },
   created(){
@@ -91,57 +112,54 @@ export default {
           item.count = 0
         })
       });
+
+      res.data.menu.forEach(menu => {
+        menu.foods.forEach(food => {
+        food.count = 0;
+        });
+      });
+
       // console.log(res.data);
       this.shopInfo = res.data;
-      // console.log(this.shopInfo);
+      console.log(this.shopInfo);
       this.$nextTick(() => {
-      //左右两边滚动
-        this._initBScroll();
-        //右边列表高度
-        this._initRightHeight()
+        // 此时DOM已更新 左右两边滚动
+        this.initScroll();
+        // 计算12个区的高度
+        this.calculateHeight()
       })
     })
   },
   computed: {
-    // 右侧联动左侧
+    // 右侧联动左侧 根据右侧滚动的位置，确定对应的索引下标
     currentIndex () {
       for (let i = 0; i < this.listHeight.length; i++) {
         let height1 = this.listHeight[i];
         let height2 = this.listHeight[i + 1];
+        // 判断是否在两个高度之间
         if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
           return i;
         }
       }
       return 0;
-    },
+    }
   },
   methods:{
-    _initBScroll(){
+    initScroll(){
       //左边滚动
-      this.leftBscroll = new BScroll(this.$refs.menuScroll,{
+      this.menuScroll = new BScroll(this.$refs.menuScroll,{
         click:true
       });
       //右边滚动
-      this.rightBscroll = new BScroll(this.$refs.shoplistWrap,{
+      this.foodScroll = new BScroll(this.$refs.foodScroll,{
         //在滚动中触发scroll 事件
-        probeType:3
+        probeType:3,
+        click:true
       });
-      this.rightBscroll.on('scroll', (pos) => { 
+      this.foodScroll.on('scroll', pos => { 
         // 实时获取位置
         this.scrollY = Math.abs(Math.round(pos.y));
     　});
-    },
-    // 获得每个区间的高度
-    _initRightHeight(){
-      let right = this.$refs.itemList.getElementsByClassName('shop-hook');
-      let height = 0;
-      this.listHeight.push(height);
-      for(let i=0;i<right.length;i++) {
-        let item = right[i];
-        height += item.clientHeight; 
-        this.listHeight.push(height);
-        // console.log(this.listHeight,'listheight')
-      }
     },
     // 点击左侧按钮联动右侧
     selectMenu(index,event){
@@ -149,31 +167,52 @@ export default {
       if (!event._constructed) {
         return
       }else{
-        let right = this.$refs.itemList.getElementsByClassName('shop-hook');
-        let el = right[index]
-        this.rightBscroll.scrollToElement(el,300)
+        let foodlist = this.$refs.foodScroll.getElementsByClassName('food-list-hook');
+        let el = foodlist[index]
+        // 滚动到对应元素的位置
+        this.foodScroll.scrollToElement(el,250)
       }
+    },
+    // 获得每个区间的高度
+    calculateHeight(){
+      let foodlist = this.$refs.foodScroll.getElementsByClassName('food-list-hook');
+      // 每个区的高度添加到数组中
+      let height = 0;
+      this.listHeight.push(height);
+      for(let i=0;i<foodlist.length-1;i++) {
+        let item = foodlist[i];
+        height += item.clientHeight; 
+        this.listHeight.push(height);
+        // console.log(this.listHeight,'listheight')
+      }
+    },
+    handleFood(item){
+      this.selectedFood = item;
+      this.showFood = true
     }
   },
   components:{
-    CartControll
+    CartControll,
+    ShopCart,
+    Food,
   }
 }
 </script>
 
 <style scoped>
-.goods{
+.goods {
   position: relative;
   height: calc(100% - 10.666667vw);
 }
-.recommend{
+
+.recommend {
   padding-top: 4.266667vw;
-  background: #fff; 
+  background-color: #fff;
 }
-.recommend-name{
+.recommend-name {
   padding-left: 4.266667vw;
-  font-size: 1rem;
   color: #333;
+  font-size: 1rem;
   font-weight: 700;
   margin-bottom: 2.666667vw;
 }
@@ -182,16 +221,16 @@ export default {
   display: flex;
   width: 100%;
 }
-.recommend-wrap ul{
+.recommend-wrap ul {
   display: flex;
   padding-left: 4.266667vw;
 }
-.recommend-wrap ul li{
+.recommend-wrap ul li {
   flex: none;
   width: 32vw;
   margin-right: 2.666667vw;
-} 
-.recommend-wrap li img{
+}
+.recommend-wrap li img {
   display: block;
   width: 32vw;
   height: 32vw;
@@ -199,99 +238,155 @@ export default {
   border-top-right-radius: 0.8vw;
   max-width: 100%;
 }
-.recommend-food .recommend-food-name{
+.recommend-food .recommend-food-name {
+  color: #333;
   font-size: 0.8rem;
-  color:#333;
   margin: 1.866667vw 0 1.233333vw;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
-.recommend-food .recommend-food-zm{
+.recommend-food .recommend-food-zm {
+  color: #999;
   font-size: 0.6rem;
-  color:#999;
   margin-bottom: 1.866667vw;
   min-height: 1em;
 }
-.recommend-food-price{
+.recommend-food-price {
   display: flex;
-  align-items:center;
+  align-items: center;
   justify-content: space-between;
   padding-right: 0.266667vw;
 }
-.recommend-food-price p{
-  color: #ff5339;
+.recommend-food-price p {
   font-size: 1rem;
-}
-::-webkit-scrollbar{
-  width:0!important;
+  color: #ff5339;
 }
 
-/* 商家列表 */
-.menuview{
-  width: 100%;
-  height: 540px;
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  background: #fff;
+::-webkit-scrollbar {
+  width: 0 !important;
 }
-/* 左侧 */
-.menu-wrapper{
-  width:21.67vw;
-  background: rgba(236, 236, 236, 0.308);
-  font-size: 0.67rem;
-  color:rgb(105, 105, 105);
+
+.menuview {
   box-sizing: border-box;
-}
-.menu-wrapper li{
-  padding:0 1.67vw 0 2vw; 
+  height: 100%;
+  padding-bottom: 10.8vw;
+  background-color: #fff;
   display: flex;
-  height: 13vw;
-  align-items: center;
-  line-height: 4vw;
 }
-.current{
-  background: #fff!important;
-  color:rgb(70, 70, 70)!important;
+.menu-wrapper {
+  overflow-y: hidden;
+  /* height: 100%; */
+  height: calc(100% - 12.8vw);
+  background-color: #f8f8f8;
+  padding-bottom: 10.666667vw;
+  width: 20.533333vw;
 }
-.menu-wrapper li img{
-  width:3.53vw;
+.menu-wrapper li {
+  padding: 4.666667vw 2vw;
+  font-size: 0.6rem;
+  color: #666;
+  line-height: 1.2;
+}
+.menu-wrapper li img {
+  max-width: 100%;
+  width: 3.466667vw;
+  height: 3.466667vw;
+  vertical-align: top;
   margin-right: 0.8vw;
 }
-/* 右侧 */
-.shoplist-wrap{
-  flex:1;
-  width:100%;
+
+.foods-wrapper {
+  overflow-y: hidden;
+  /* height: 100%; */
+  height: calc(100% - 12.8vw);
+  width: 79.466667vw;
+  padding-bottom: 10.666667vw;
+}
+.category-title {
+  margin-left: 2.666667vw;
+  padding: 2vw 8vw 2vw 0;
+  display: flex;
+  align-items: center;
   overflow: hidden;
 }
-.shoplist-wrap li{
-  margin: 2vw 4vw 0 2vw;
-}
-.shoplist-name{
-  color:rgb(122, 121, 121)!important;
-  font-size: 0.8rem!important;
+.category-title strong {
+  margin-right: 1.333333vw;
   font-weight: 700;
+  font-size: 0.8rem;
+  color: #666;
+  flex: none;
 }
-.shoplist-wrap span{
-  color:#999;
-  font-size: 0.67rem;
+.category-title span {
+  flex: 1;
+  color: #999;
+  font-size: 0.6rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.shoplist-info{
+.fooddetails {
+  min-height: 30.666667vw;
+  padding: 2.666667vw 0 2.666667vw 2.666667vw;
+  margin-bottom: 0.133333vw;
   display: flex;
-  margin: 4vw 0 6vw 0;
 }
-.shoplist-info img{
-  width:26vw;
-  height:26vw;
+.fooddetails img {
+  width: 25.333333vw;
+  height: 25.333333vw;
+  flex: none;
+  margin-right: 2.666667vw;
+  border-radius: 0.533333vw;
 }
-.goods-description{
-  display: block;
-  width: 43vw;
-  color: red!important;
-  overflow:hidden;
-  text-overflow:ellipsis!important;
-  white-space:nowrap;
+.fooddetails-info {
+  flex: 1;
+  padding-bottom: 6.666667vw;
+  padding-right: 4vw;
+}
+.fooddetails-info h4 {
+  padding-right: 4vw;
+  font-weight: 700;
+  overflow: hidden;
+  font-size: 1rem;
+  white-space: nowrap;
+  width: 40vw;
+  text-overflow: ellipsis;
+  color: #333;
+}
+.fooddetails-des {
+  margin: 1.333333vw 0;
+  font-size: 0.6rem;
+  color: #999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 42.666667vw;
+}
+.fooddetails-sales {
+  margin: 1.733333vw 0 !important;
+  color: #999;
+  font-size: 0.6rem;
+  line-height: 1;
+  min-height: 1em;
+}
+.fooddetails-price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 3.733333vw;
+}
+.fooddetails-price .price {
+  font-size: 1rem;
+  line-height: 4.266667vw;
+  color: #ff5339;
+  padding-bottom: 0.933333vw;
+  display: flex;
+  align-items: baseline;
+}
+
+.menu-wrapper .current {
+  background-color: #fff !important;
+  color: #333 !important;
 }
 </style>
 
