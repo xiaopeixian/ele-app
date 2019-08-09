@@ -48,6 +48,10 @@ export default {
   height: 100%;
   width: 100%;
   z-index: 100;
+  overflow: auto;
+}
+.food::-webkit-scrollbar{
+  display: none;
 }
 .foodpanel-close {
   width: 7.466667vw;

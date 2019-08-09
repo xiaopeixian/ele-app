@@ -443,7 +443,7 @@ export default {
   width:100%;
   height: 100%;
 }
-.comment::-webkit-scrollbar{
+::-webkit-scrollbar{
   width:0!important;
 }
 </style>
