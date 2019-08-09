@@ -30,6 +30,13 @@
   text-overflow: ellipsis; 省略号修剪文本
   overflow: hidden;
 
+  超出2行后省略
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+
   prevent的使用：阻止默认事件的发生
 
   蒙版：
@@ -62,3 +69,5 @@
   border-style: solid;
   border-width: 0 2.133333vw 2.133333vw;
   border-color: transparent transparent #f3f3f3;
+
+  word-break: break-word;换行
