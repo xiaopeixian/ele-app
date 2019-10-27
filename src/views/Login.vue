@@ -68,9 +68,10 @@ export default {
           code:this.verifyCode
         })
         .then(res=>{
-          // console.log(res);
-          // 检验成功 设置登录状态并且跳转到/ 
-          localStorage.setItem("ele_login",true);
+          console.log(res.data);
+          // 检验成功 设置登录状态并且跳转到/
+          localStorage.setItem("ele_login",res.data.user._id);
+          localStorage.setItem("ele_phone",res.data.user.phone);
           this.$router.push("/")
         })
     },
@@ -86,7 +87,7 @@ export default {
           phone:this.phone
         })
         .then(res =>{
-          console.log(res);
+          // console.log(res);
         })
       }
     },

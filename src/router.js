@@ -79,6 +79,16 @@ const router = new Router({
         },
       ]
     },
+    {
+      path:'/myAddress',
+      name:'myAddress',
+      component:() => import('./views/orders/MyAddress.vue')
+    },
+    {
+      path:'/addAddress',
+      name:'addAddress',
+      component:() => import('./views/orders/AddAddress.vue')
+    },
   ]
 })
 // 路由守卫 必须登录才能进去其他页面
@@ -90,7 +100,7 @@ router.beforeEach((to,from,next)=>{
     next();
   } else {
     // 是否在登录状态下，不是的话就跳转到登录页面
-    // isLogin ? next() : next('/login')
+    isLogin ? next() : next('/login')
     next()
   }
 })
