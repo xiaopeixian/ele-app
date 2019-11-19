@@ -1,6 +1,6 @@
 <template>
   <div class="TabTag">
-    <span class="tag" v-for="(tag,index) in tags" :key="index">
+    <span class="tag" v-for="(tag,index) in tags" :key="index" @click="$emit('checkTag',tag)" :class="{checked:selectTag == tag}">
       {{tag}}
     </span>
   </div>
@@ -11,6 +11,7 @@ export default {
   name:"TabTag",
   props:{
     tags: Array,
+    selectTag : String
   }
 }
 </script>
@@ -30,5 +31,9 @@ span{
   width: 18vw;
   border-radius: 0.7;
   border: 1px solid #ddd;
+}
+.checked{
+  background: rgba(0, 132, 255, 0.082);
+  color:rgba(0, 140, 255, 0.753)
 }
 </style>

@@ -1,19 +1,24 @@
 <template>
   <div class="form-block">
-    <div class="form-content">
+    <div class="form-title">
       <label>{{title}}</label>
-      <div class="form-area-wrap">  
+    </div>
+    <div class="form-content">
+      <div class="form-area-wrap"> 
         <input v-if="!textarea" :type="type" :name="title" :placeholder="placeholder">
         <textarea v-else maxlength="100" :type="type" rows="2" :placeholder="placeholder"></textarea>
-        <TabTag :tags="sex"></TabTag>
+        <i class="icon" :v-if="icon" :class="'fa fa-'+icon"></i>
       </div>
-      <i :v-if="icon" :class="'fa fa-'+icon"></i>
+      <div v-if="sexes" class="tag">
+        <TabTag :tags="sexes" @checkTag="checkSex" :selectTag="sex"></TabTag>
+      </div>
     </div>
+
   </div>
 </template>
 
 <script>
-import TabTag from "./TabTag.vue";
+import TabTag from './TabTag.vue'
 export default {
   name:"FormBlock",
   props:{
@@ -26,10 +31,16 @@ export default {
     placeholder: String,
     type: String,
     icon: String,
-    sex: Array,
+    sexes: Array,
+    sex: String
+  },
+  methods:{
+    checkSex(item){
+      this.$emit('checkSex',item)
+    }
   },
   components:{
-    TabTag,
+    TabTag
   }
 }
 </script>
@@ -38,23 +49,28 @@ export default {
 .form-block{
   box-sizing: border-box;
   background: #fff;
-}
-.form-content{
   display: flex;
-  align-items: center;
+  flex-direction: row;
   margin-left: 4vw;
   border-bottom: 1px solid #ddd;
 }
-.form-content label{
-  
+.form-title{
+  display: flex;
+  align-items: center;
+}
+.form-block label{
   font-size: 0.95rem;
   font-weight: 700;
   color: #333;
   width: 20vw;
 }
+.form-content{
+  flex: 1;
+}
 .form-area-wrap{
-  /* display: flex; */
+  display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 .form-area-wrap input{
   padding:4vw 0 4vw;
@@ -77,9 +93,10 @@ export default {
   outline: none;
   resize:none;
 }
-.form-content i{
-  flex: 1;
-  position: absolute;
-  right: 4vw;
+.icon{
+  padding-right: 4vw;
+}
+.tag{
+  border-top: 1px solid #ddd;
 }
 </style>  

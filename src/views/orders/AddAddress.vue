@@ -2,13 +2,15 @@
   <div class="add-address">
     <Header :isLeft="true" :title="title"></Header>
     <div class="info-view">
-      <FormBlock :sex="sex" title="联系人" placeholder="姓名"></FormBlock>
-      <FormBlock title="电话" placeholder="手机号码"></FormBlock>
-      <FormBlock title="地址" placeholder="小区/写字楼/学校等" icon="angle-right"></FormBlock>
-      <FormBlock textarea="textarea" title="门牌号" placeholder="10号楼5层501室222" icon="edit"></FormBlock>
-      <div class="formblock">
-        <span>标签</span>
-        <TabTag :tags="tags"></TabTag>
+      <div class="info-form">
+        <FormBlock title="联系人" placeholder="姓名" :sexes="sexes" @checkSex="checkSex" :sex="this.addressInfo.sex"></FormBlock>
+        <FormBlock title="电话" placeholder="手机号码"></FormBlock>
+        <FormBlock title="地址" placeholder="小区/写字楼/学校等" icon="angle-right"></FormBlock>
+        <FormBlock textarea="textarea" title="门牌号" placeholder="10号楼5层501室222" icon="edit"></FormBlock>
+        <div class="formblock">
+          <span>标签</span>
+          <TabTag :tags="tags" @checkTag="checkTag" :selectTag="this.addressInfo.tags"></TabTag>
+        </div>
       </div>
 
       <div class="confirm-address">
@@ -28,8 +30,20 @@ export default {
   data(){
     return{
       title:"添加地址",
-      sex:["先生","女士"],
+      sexes:["先生","女士"],
       tags:["家","学校","公司"],
+      addressInfo:{
+        tags: "",
+        sex: ""
+      }
+    }
+  },
+  methods:{
+    checkTag(item){
+      this.addressInfo.tags = item;
+    },
+    checkSex(item){
+      this.addressInfo.sex = item;
     }
   },
   components:{
@@ -47,9 +61,11 @@ export default {
   box-sizing: border-box;
   overflow: hidden;
 }
+.info-form{
+  background: #fff;
+}
 .formblock{
   display: flex;
-  background: #fff;
   align-items: center;
   padding-left: 4vw;
   border-bottom: 1px solid #ddd;
