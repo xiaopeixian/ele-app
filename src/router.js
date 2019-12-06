@@ -82,12 +82,12 @@ const router = new Router({
     {
       path:'/myAddress',
       name:'myAddress',
-      component:() => import('./views/orders/MyAddress.vue')
+      component:() => import('./views/orders/MyAddress.vue'),
     },
     {
       path:'/addAddress',
       name:'addAddress',
-      component:() => import('./views/orders/AddAddress.vue')
+      component:() => import('./views/orders/AddAddress.vue'),
     },
   ]
 })

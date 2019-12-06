@@ -21,8 +21,8 @@
           </p>
         </div>
         <div class="address-card-edit">
-          <i class="fa fa-edit"></i>
-          <i class="fa fa-close"></i>
+          <i @click="editAddress(address)" class="fa fa-edit"></i>
+          <i @click="handleDelete(address,index)" class="fa fa-close"></i>
         </div>
       </li>
     </ul>
@@ -49,22 +49,53 @@ export default {
     next(vm => vm.getData());
   },
   methods:{
+    // 获取存储的收货人信息
     getData(){
       const userId = localStorage.ele_login;
       this.$axios(`/api/user/user_info/${userId}`)
       .then(res =>{
-        console.log(res.data.myAddress);
+        // console.log(res.data.myAddress);
         this.allAddress = res.data.myAddress;
       })
     },
+    // 新增收获地址
     addAddress(){
-      this.$router.push('/addAddress')
+      this.$router.push({
+        name:"addAddress",
+        params:{
+          title:"添加地址",
+          addressInfo: {
+            tag: "",
+            sex: "",
+            address:"",
+            name:"",
+            phone:"",
+            bottom:""
+          }
+        }
+      })
+    },
+    editAddress(address){
+      this.$router.push({
+        name:"addAddress",
+        params:{
+          title:"编辑地址",
+          addressInfo: address
+        }
+      })
+    },
+    handleDelete(address,index){
+      this.$axios
+      .delete(`/api/user/address/${localStorage.ele_login}/${address._id}`)
+      .then(res =>
+        this.allAddress.splice(index,1)
+      )
     }
   },
   components: {
     Header
   }
-};
+}
 </script>
 
 <style scoped>

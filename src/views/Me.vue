@@ -63,7 +63,20 @@ export default {
       if (this.userInfo.myAddress) {
         this.$router.push('/myAddress');
       }else{
-        this.$router.push('/addAddress');
+        this.$router.push({
+          name:"addAddress",
+          params:{
+            title:"添加地址",
+            addressInfo: {
+              tag: "",
+              sex: "",
+              address:"",
+              name:"",
+              phone:"",
+              bottom:""
+            }
+          }
+        })
       }
       
     }

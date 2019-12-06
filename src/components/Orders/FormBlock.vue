@@ -1,16 +1,16 @@
 <template>
-  <div class="form-block">
+  <div class="form-block" >
     <div class="form-title">
       <label>{{title}}</label>
     </div>
-    <div class="form-content">
+    <div class="form-content" @click="clickForm">
       <div class="form-area-wrap"> 
-        <input v-if="!textarea" :type="type" :name="title" :placeholder="placeholder">
-        <textarea v-else maxlength="100" :type="type" rows="2" :placeholder="placeholder"></textarea>
+        <input @input="onInput" v-if="!textarea" :value="value" :type="type" :name="title" :placeholder="placeholder">
+        <textarea v-else maxlength="100" @input="onInput" :value="value" :type="type" rows="2" :placeholder="placeholder"></textarea>
         <i class="icon" :v-if="icon" :class="'fa fa-'+icon"></i>
       </div>
       <div v-if="sexes" class="tag">
-        <TabTag :tags="sexes" @checkTag="checkSex" :selectTag="sex"></TabTag>
+        <TabTag :tags="sexes"  @checkTag="checkSex" :selectTag="sex"></TabTag>
       </div>
     </div>
 
@@ -32,11 +32,18 @@ export default {
     type: String,
     icon: String,
     sexes: Array,
-    sex: String
+    sex: String,
+    value: String
   },
   methods:{
     checkSex(item){
       this.$emit('checkSex',item)
+    },
+    clickForm(){
+      this.$emit('clickForm')
+    },
+    onInput(e){
+      this.$emit('input',e.target.value)
     }
   },
   components:{
